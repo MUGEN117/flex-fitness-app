@@ -40,26 +40,28 @@ cd flex-fitness-app
 2. **Create and activate a virtual environment**
 
 Windows:
+```bash
 python -m venv venv
 .\venv\Scripts\Activate
+```
 
 3. **Install dependencies**
-   
+```bash
 pip install -r requirements.txt
-
+```
 4. **Set environmental variables (optional)**
-
+```bash
 SECRET_KEY=your_secret_key
 DATABASE_URL=sqlite:///app/db.sqlite3
-
+```
 5. **Initialize the databse**
-
+```bash
 flask db init
 flask db migrate -m "Initial migration"
 flask db upgrade
-
+```
 6. **Run the app**
-
+```bash
 python run.py
-
+```
 
