@@ -1,5 +1,6 @@
 from app import db
 from datetime import datetime
+<<<<<<< HEAD
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -7,10 +8,17 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     
+=======
+import string, random
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+>>>>>>> upstream/main
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
+<<<<<<< HEAD
     role = db.Column(db.String(20), nullable=False)  # 'trainer' or 'trainee'
     created_at = db.Column(db.DateTime, default=datetime)
 
@@ -18,6 +26,31 @@ class User(db.Model):
 
     food_logs = db.relationship("UserFoodLog", backref="user", lazy=True)
 
+=======
+    role = db.Column(db.String(20), nullable=False)  # 'trainer' or 'member'
+    trainer_code = db.Column(db.String(6), unique=True, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # 🔹 Link each member to a trainer
+    trainer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+
+    # 🔹 Self-referential relationship
+    trainer = db.relationship(
+        'User',
+        remote_side=[id],
+        backref=db.backref('members', lazy='dynamic')
+    )
+
+    # 🔹 Relationships
+    progress = db.relationship("Progress", backref="user", cascade="all, delete-orphan")
+    food_logs = db.relationship("UserFoodLog", backref="user", lazy=True)
+
+    def generate_trainer_code(self):
+        if self.role == 'trainer' and not self.trainer_code:
+            characters = string.ascii_uppercase + string.digits
+            self.trainer_code = ''.join(random.choices(characters, k=6))
+            
+>>>>>>> upstream/main
 class Food(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
@@ -38,6 +71,7 @@ class UserFoodLog(db.Model):
     food = db.relationship("Food")
 
 class Progress(db.Model):
+<<<<<<< HEAD
     __tablename__ = 'progress'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -47,3 +81,10 @@ class Progress(db.Model):
     notes = db.Column(db.String(255))
 
     user = db.relationship("User", back_populates="progress_entries")
+=======
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    date = db.Column(db.DateTime, nullable=False)
+    weight = db.Column(db.Float, nullable=True)
+    notes = db.Column(db.Text, nullable=True)
+>>>>>>> upstream/main

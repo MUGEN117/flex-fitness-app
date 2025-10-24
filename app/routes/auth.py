@@ -58,6 +58,13 @@ def register():
             password_hash=password_hash,
             role=role
         )
+<<<<<<< HEAD
+=======
+
+        if user.role == 'trainer':
+            user.generate_trainer_code()
+            
+>>>>>>> upstream/main
         db.session.add(user)
         db.session.commit()
 
@@ -71,4 +78,8 @@ def register():
 def logout():
     session.clear()  # removes all session data
     flash("You have been logged out.")
+<<<<<<< HEAD
     return redirect(url_for("main.home"))  # redirect to homepage
+=======
+    return redirect(url_for("main.home"))  # redirect to homepage
+>>>>>>> upstream/main
