@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2>Create Workout Template</h2>
+
+```
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} mt-2">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- Template Creation Form -->
+<form method="POST" action="{{ url_for('template.create_template') }}" class="mt-4">
+    <div class="mb-3">
+        <label for="name" class="form-label">Template Name</label>
+        <input type="text" name="name" class="form-control" placeholder="e.g. Push Day, Leg Day, Full Body" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="description" class="form-label">Description (optional)</label>
+        <textarea name="description" class="form-control" rows="2" placeholder="Describe this workout template..."></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Template</button>
+</form>
+
+<hr>
+
+<!-- Trainer's Templates -->
+{% if templates %}
+<h4 class="mt-4">Your Workout Templates</h4>
+<div class="table-responsive mt-3">
+    <table class="table table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in templates %}
+            <tr>
+                <td>{{ t.name }}</td>
+                <td>{{ t.description or 'No description provided' }}</td>
+                <td>
+                    <a href="{{ url_for('template.add_exercise', template_id=t.id) }}" class="btn btn-success btn-sm">
+                        Add Exercises
+                    </a>
+                    <a href="{{ url_for('template.assign_template', template_id=t.id) }}" class="btn btn-outline-dark btn-sm">
+                        Assign to Client
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-secondary mt-4">
+    <strong>No templates created yet.</strong> Please create one above to add exercises or assign it to clients.
+</div>
+{% endif %}
+```
+
+</div>
+{% endblock %}

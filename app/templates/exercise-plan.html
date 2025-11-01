@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Sidebar (same as dashboard) -->
+            <div class="list-group">
+                <a href="{{ url_for('member.dashboard') }}" class="list-group-item list-group-item-action">
+                    Dashboard
+                </a>
+                <a href="{{ url_for('member.exercise_plan') }}" class="list-group-item list-group-item-action active">
+                    Exercise Plan
+                </a>
+                <a href="{{ url_for('member.view_progress') }}" class="list-group-item list-group-item-action">
+                    Progress
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body">
+                    <h2 class="mb-4 text-center text-primary">Your Exercise Plan</h2>
+
+                    {% if plan %}
+                        {% for day, exercises in plan.items() %}
+                            <div class="mb-4">
+                                <h4 class="text-secondary">{{ day }}</h4>
+                                <table class="table table-striped align-middle mt-2">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Exercise</th>
+                                            <th>Sets</th>
+                                            <th>Reps</th>
+                                            <th>Notes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for ex in exercises %}
+                                        <tr>
+                                            <td>{{ ex.name }}</td>
+                                            <td>{{ ex.sets }}</td>
+                                            <td>{{ ex.reps }}</td>
+                                            <td>{{ ex.notes or "-" }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-info text-center">
+                            No exercise plan assigned yet. Check back soon or contact your trainer.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Workout Templates</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <h1>All Workout Templates</h1>
+    <a href="/create" class="btn btn-primary mb-4">Create New Template</a>
+
+    <div class="list-group">
+      {% for template in templates %}
+      <div class="list-group-item">
+        <h4>{{ template.name }}</h4>
+        <p>{{ template.description }}</p>
+        <ul>
+          {% for ex in template.exercises %}
+          <li>{{ ex.exercise_name }} — {{ ex.sets }} sets × {{ ex.reps }} reps</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% else %}
+      <p>No templates created yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</body>
+</html>

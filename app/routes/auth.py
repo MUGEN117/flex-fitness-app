@@ -30,7 +30,15 @@ def login_member():
         if user and check_password_hash(user.password_hash, password):
             session["user_id"] = user.id
             session["role"] = user.role
-            return render_template("dashboard-member.html", user=user)
+
+            totals = {
+                "calories": 0,
+                "protein": 0,
+                "carbs": 0,
+                "fat": 0,
+            }
+
+            return render_template("dashboard-member.html", user=user, totals=totals)
         flash("Invalid email or password")
     return render_template("login-member.html")
 
@@ -57,7 +65,10 @@ def register():
         # Hash password *after* validation
         password_hash = generate_password_hash(password)
 
+        username = request.form.get("username") or email.split("@")[0]
+
         user = User(
+            username=username,
             first_name=first_name,
             last_name=last_name,
             email=email,

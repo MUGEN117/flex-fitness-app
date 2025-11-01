@@ -11,11 +11,7 @@
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
-<<<<<<< HEAD
-      <a class="navbar-brand" href="index.html">Temp</a>
-=======
       <a class="navbar-brand ms-auto fw" href="index.html">Temp</a>
->>>>>>> upstream/main
     </div>
   </nav>
 
@@ -25,6 +21,10 @@
         <h3 class="card-title text-center mb-4">Create Your Account</h3>
 
         <form method="POST" action="{{ url_for('auth.register') }}" id="createAccountForm">
+          <div class=""mb-3">
+            <label for ="username" class="form-label">Username</label>
+            <input type="text" name="username" placeholder="Username" required>
+          </div>
           <div class="mb-3">
             <label for="firstName" class="form-label">First Name</label>
             <input type="text" class="form-control" id="firstName" name="first_name" required>

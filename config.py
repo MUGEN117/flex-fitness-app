@@ -10,3 +10,6 @@ class Config:
         "sqlite:///" + os.path.join(basedir, "db.sqlite3")
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    API_NINJAS_KEY = os.getenv('API_NINJAS_KEY', 'your-default-key-if-needed')
+
