@@ -1,10 +1,11 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy 
 from flask_migrate import Migrate
-
+from flask_login import LoginManager   # ✅ Add this import
 
 db = SQLAlchemy()
 migrate = Migrate()
+login_manager = LoginManager()          # ✅ Add this
 
 def create_app():
     app = Flask(__name__)
@@ -13,7 +14,12 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
+    login_manager.init_app(app)          # ✅ Connect Flask-Login to your app
+    
+    login_manager.login_view = "auth.login_trainer"  # Redirect unauthorized users
+    login_manager.login_message_category = "warning"
 
+    # Import blueprints
     from app.routes.auth import auth_bp
     from app.routes.main import main_bp
     from app.routes.member import member_bp

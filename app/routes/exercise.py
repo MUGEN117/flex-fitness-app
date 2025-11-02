@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, request, url_for, flash, current_app, session
 from app import db
-from app.models import WorkoutTemplate, TemplateExercise, Client, ClientWorkout
+from app.models import WorkoutTemplate, TemplateExercise, User, ClientWorkout
 import requests
 
 template_bp = Blueprint('template', __name__, url_prefix="/template", template_folder='../templates')
@@ -123,55 +123,45 @@ def manage_clients(template_id):
     if request.method == "POST":
         name = request.form.get("name")
         email = request.form.get("email", "")
-        new_client = Client(name=name, email=email)
+        new_client = User(name=name, email=email)
         db.session.add(new_client)
         db.session.commit()
         return redirect(url_for("template.manage_clients", template_id=template_id))
 
-    clients = Client.query.all()
+    clients = User.query.all()
     return render_template("clients.html", clients=clients, template_id=template_id)
 
 
 # --------------------------------------------------
 # Assign Template to Client
 # --------------------------------------------------
-@template_bp.route('/assign/<int:template_id>', methods=['GET', 'POST'])
-def assign_template(template_id):
-    # Ensure a trainer is logged in
+@template_bp.route('/assign', methods=['GET', 'POST'])
+def assign_template():
     if "user_id" not in session or session.get("role") != "trainer":
         flash("Please log in as a trainer first.", "warning")
         return redirect(url_for("auth.login_trainer"))
 
     trainer_id = session.get("user_id")
-    template = WorkoutTemplate.query.get_or_404(template_id)
 
-    # Optional: restrict assignment only to templates owned by this trainer
-    if template.trainer_id != trainer_id:
-        flash("You are not authorized to assign this template.", "danger")
-        return redirect(url_for("template.home"))
-
-    # Show only this trainer's clients
-    clients = Client.query.filter_by(trainer_id=trainer_id).all()
+    templates = WorkoutTemplate.query.filter_by(trainer_id=trainer_id).all()
+    clients = User.query.filter_by(trainer_id=trainer_id, role='member').all()
 
     if request.method == 'POST':
+        template_id = request.form.get('template_id')
         client_id = request.form.get('client_id')
 
-        # Prevent duplicate assignments
-        existing_assignment = ClientWorkout.query.filter_by(
-            client_id=client_id, template_id=template_id
-        ).first()
+        if not template_id or not client_id:
+            flash("Please select both a client and a template.", "warning")
+            return redirect(url_for('template.assign_template'))
 
-        if existing_assignment:
-            flash("This client already has this template assigned.", "warning")
-            return redirect(url_for('template.assign_template', template_id=template_id))
+        existing = ClientWorkout.query.filter_by(template_id=template_id, client_id=client_id).first()
+        if existing:
+            flash("This client already has that template assigned.", "warning")
+            return redirect(url_for('template.assign_template'))
 
-        # Create new assignment
-        new_assignment = ClientWorkout(client_id=client_id, template_id=template_id)
+        new_assignment = ClientWorkout(template_id=template_id, client_id=client_id)
         db.session.add(new_assignment)
         db.session.commit()
+        flash("Template assigned successfully!", "success")
 
-        flash('Template successfully assigned to client!', 'success')
-        return redirect(url_for('template.home'))
-
-    return render_template('assign_template.html', template=template, clients=clients)
-
+    return render_template('assign_template.html', templates=templates, clients=clients)

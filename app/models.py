@@ -1,12 +1,14 @@
 import requests
 from flask import current_app
-from app import db
+from app import db, login_manager
+from flask_login import UserMixin
 from datetime import datetime
 import random
 import string
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
 
@@ -15,10 +17,14 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
 
-    role = db.Column(db.String(20), nullable=False)  # 'trainer' or 'member'
+    # Role — either 'trainer' or 'member'
+    role = db.Column(db.String(20), nullable=False)
+
+    # Trainer info
     trainer_code = db.Column(db.String(6), unique=True, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Self-referential relationship — members link to their trainer
     trainer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     trainer = db.relationship(
         'User',
@@ -26,6 +32,7 @@ class User(db.Model):
         backref=db.backref('members', lazy='dynamic')
     )
 
+    # Relationships to other tables
     progress = db.relationship("Progress", backref="user", cascade="all, delete-orphan")
     food_logs = db.relationship("UserFoodLog", backref="user", lazy=True)
 
@@ -35,6 +42,12 @@ class User(db.Model):
         self.trainer_code = code
         db.session.add(self)
         db.session.commit()
+
+
+# Flask-Login user loader
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
             
 class Food(db.Model):
     id = db.Column(db.Integer, primary_key=True)
