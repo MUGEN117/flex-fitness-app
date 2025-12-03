@@ -6,44 +6,57 @@
   <title>Welcome | Temp</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 </head>
-<body class="bg-light index-page">
+<body class="app-shell index-page" data-theme="light">
 
-  <!-- Persistent blue navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container d-flex align-items-center justify-content-between">
-      <a href="{{ url_for('auth.login_trainer') }}" class="text-white text-decoration-none fw-semibold small">
-        Trainer Login
-      </a>
-      <a class="navbar-brand fw-bold ms-auto" href="{{ url_for('main.home') }}">
-        Temp
-      </a>
-    </div>
-  </nav>
+  <!-- Instagram icon link -->
+  <a 
+    class="instagram-link" 
+    href="https://www.instagram.com/flextrainingseries/" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    aria-label="Flex Training Series Instagram"
+  >
+    <img 
+      src="{{ url_for('static', filename='img/instagram-logo.svg') }}" 
+      alt="" 
+      class="instagram-logo" 
+      role="presentation" 
+      loading="lazy" 
+      width="32" 
+      height="32"
+    >
+    <span class="visually-hidden">Instagram</span>
+  </a>
 
   <!-- Main content -->
-  <div class="container text-center d-flex flex-column justify-content-center align-items-center" style="min-height: 90vh;">
-    <div class="w-100" style="max-width: 500px;">
+  <div class="landing-hero container text-center d-flex flex-column align-items-center">
+    <div class="hero-card w-100">
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
           {% for category, msg in messages %}
             <div class="alert alert-{{ category if category else 'info' }} alert-dismissible fade show" role="alert">
               {{ msg }}
               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              <div class="flash-progress" aria-hidden="true"><div class="bar"></div></div>
             </div>
           {% endfor %}
         {% endif %}
       {% endwith %}
-    </div>
-    <h1 class="fw-bold">Welcome message!</h1>
-    <p class="text-muted mb-5">Start your fitness journey today.</p>
-
-    <div class="d-flex flex-column gap-3" style="max-width: 300px; width: 100%;">
-      <a href="{{ url_for('auth.login_member') }}" class="btn btn-primary w-100">Login as Member</a>
-      <a href="{{ url_for('auth.register') }}" class="btn btn-success w-100">Create an Account</a>
+      <div class="d-flex flex-column align-items-center">
+        <h1 class="fw-bold mb-2">Welcome message!</h1>
+        <p class="text-muted mb-4">Start your fitness journey today.</p>
+        <div class="d-flex flex-column gap-3" style="max-width: 300px; width: 100%;">
+          <a href="{{ url_for('auth.login_member') }}" class="btn btn-primary w-100">Log in</a>
+          <a href="{{ url_for('auth.register') }}" class="btn btn-success w-100">Create an Account</a>
+        </div>
+      </div>
     </div>
   </div>
 
+  <script src="{{ url_for('static', filename='js/theme-toggle.js') }}"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/flash.js') }}"></script>
 </body>
 </html>

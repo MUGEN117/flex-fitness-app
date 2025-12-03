@@ -2,6 +2,7 @@ from app import db, login_manager
 from datetime import datetime
 import string, random
 from flask_login import UserMixin
+import pytz
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -201,6 +202,17 @@ class TrainerMealIngredient(db.Model):
 
     food = db.relationship('Food')
 
+class AssignedMeal(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    meal_id = db.Column(db.Integer, db.ForeignKey('trainer_meal.id'), nullable=False)
+    trainer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    member_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    assigned_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    meal = db.relationship('TrainerMeal', backref=db.backref('assignments', lazy='dynamic'))
+    trainer = db.relationship('User', foreign_keys=[trainer_id])
+    member = db.relationship('User', foreign_keys=[member_id])
+
 
 class MemberMeal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -356,3 +368,7 @@ class Message(db.Model):
         foreign_keys=[client_id],
         backref=db.backref('received_messages', lazy='dynamic')
     )
+    @property
+    def local_timestamp(self):
+        est = pytz.timezone("America/New_York")
+        return self.timestamp.replace(tzinfo=pytz.utc).astimezone(est)

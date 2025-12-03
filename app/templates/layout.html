@@ -10,7 +10,7 @@
 <body class="app-shell" data-theme="{{ theme_mode | default('light') }}">
   <header class="app-top-bar">
     <div class="container d-flex align-items-center justify-content-between">
-      <a class="app-brand" href="{{ url_for('main.home') }}">Temp</a>
+      <a class="app-brand" href="{{ url_for('main.home') }}"></a>
       <div class="app-actions">
         <button type="button" class="theme-toggle btn btn-sm btn-outline-light" aria-label="Toggle theme" aria-pressed="{{ 'true' if theme_mode == 'dark' else 'false' }}">
           <span class="theme-toggle-label">{{ 'Light mode' if theme_mode == 'dark' else 'Dark mode' }}</span>

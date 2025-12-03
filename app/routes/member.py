@@ -1071,8 +1071,8 @@ def log_food():
     log_payload = {
         "id": log.id,
         "food_name": food.name,
-        "quantity": round(log.quantity, 2),
-        "unit": log.unit,
+        "quantity": round(quantity, 2),  # ← Display the original quantity
+        "unit": unit_input,               # ← Display the original unit
         "calories": round(scaled["calories"], 1),
         "protein": round(scaled["protein"], 1),
         "carbs": round(scaled["carbs"], 1),
@@ -1539,11 +1539,25 @@ def build_member_summary_context(client: User, macro_week_param: Optional[int] =
     macro_week_start = current_week_start - timedelta(weeks=requested_offset)
     macro_week_end = macro_week_start + timedelta(days=6)
 
+    week_start_dt = datetime.combine(macro_week_start, datetime.min.time())
+    week_end_dt = datetime.combine(macro_week_end + timedelta(days=1), datetime.min.time())
+
     logs_for_macros = (
         UserFoodLog.query
         .filter(UserFoodLog.user_id == client.id)
-        .filter(UserFoodLog.log_date >= earliest_week_start)
-        .filter(UserFoodLog.log_date <= current_week_start + timedelta(days=6))
+        .filter(
+            or_(
+                and_(
+                    UserFoodLog.log_date >= macro_week_start,
+                    UserFoodLog.log_date <= macro_week_end,
+                ),
+                and_(
+                    UserFoodLog.log_date.is_(None),
+                    UserFoodLog.created_at >= week_start_dt,
+                    UserFoodLog.created_at < week_end_dt,
+                ),
+            )
+        )
         .all()
     )
     daily_macro_totals = defaultdict(lambda: {"calories": 0.0, "protein": 0.0, "carbs": 0.0, "fats": 0.0})
@@ -1669,11 +1683,9 @@ def member_summary():
 # -----------------------------
 @member_bp.route("/logout")
 def logout():
-    theme_pref = getattr(current_user, "theme_mode", None)
     logout_user()
-    preserved_theme = theme_pref or session.get("theme_mode") or "light"
     session.clear()  # Clears the entire session
-    session["theme_mode"] = preserved_theme
+    session["theme_mode"] = "light"
     flash("You have been logged out successfully.", "success")
     return redirect(url_for("auth.login_member"))
 
