@@ -287,9 +287,17 @@ class ExerciseCatalog(db.Model):
     primary_muscles = db.Column(db.String(200), index=True)
     secondary_muscles = db.Column(db.String(200))
     instructions = db.Column(db.Text)
+
+    # Existing GitHub API URLs
     image_main = db.Column(db.String(255))
     image_secondary = db.Column(db.String(255))
+
+    # NEW: Cached local paths
+    local_image_main = db.Column(db.String(255))
+    local_image_secondary = db.Column(db.String(255))
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 
 
 class AssignedTemplate(db.Model):

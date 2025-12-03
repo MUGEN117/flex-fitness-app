@@ -72,6 +72,7 @@ def run_migrations_offline():
         context.run_migrations()
 
 
+
 def run_migrations_online():
     """Run migrations in 'online' mode.
 

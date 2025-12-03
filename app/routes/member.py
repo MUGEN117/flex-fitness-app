@@ -1,12 +1,5 @@
 from flask import Blueprint, render_template, session, flash, redirect, request, url_for, jsonify
 from app import db
-<<<<<<< HEAD
-from app.models import User, Progress, Food, UserFoodLog, FoodMeasure
-from datetime import datetime
-
-member_bp = Blueprint('member', __name__, url_prefix='/member')
-
-=======
 from app.models import (
     User,
     Progress,
@@ -105,7 +98,6 @@ ACTIVITY_LEVELS = [
     (1.9, "Extremely Active (1.9)")
 ]
 
->>>>>>> upstream/main
 # -----------------------------
 # Inject user into templates
 # -----------------------------
@@ -116,8 +108,6 @@ def inject_user():
         return {"user": User.query.get(user_id)}
     return {}
 
-<<<<<<< HEAD
-=======
 def _pounds_to_kg(value):
     if value is None:
         return None
@@ -201,7 +191,6 @@ def _update_user_calorie_targets(user, weight_lbs=None):
     user.maintenance_calories = maintenance if maintenance is not None else None
     user.calorie_goal = goal if goal is not None else None
 
->>>>>>> upstream/main
 @member_bp.route("/dashboard", methods=["GET", "POST"])
 def dashboard():
     user_id = session.get("user_id")
@@ -211,9 +200,6 @@ def dashboard():
         return redirect(url_for("auth.login_member"))
 
     user = User.query.get(user_id)
-<<<<<<< HEAD
-    today = datetime.utcnow().date()
-=======
     has_any_messages = False
     has_unread_messages = False
     if user and user.trainer_id:
@@ -226,7 +212,6 @@ def dashboard():
                 Message.query.filter_by(client_id=user.id).first() is not None
             )
     today = _today_eastern()
->>>>>>> upstream/main
     search_results = []
 
     if request.method == "POST":
@@ -295,19 +280,6 @@ def dashboard():
             flash("Please enter a food name to search.", "warning")
 
     # -----------------------------
-<<<<<<< HEAD
-    # Fetch today's logs + compute totals
-    # -----------------------------
-    user_food_logs = UserFoodLog.query.filter_by(user_id=user.id, log_date=today).all()
-    totals = {"calories": 0, "protein": 0, "carbs": 0, "fat": 0}
-
-    for log in user_food_logs:
-        scaled = log.scaled  # uses your existing @property
-        totals["calories"] += scaled["calories"]
-        totals["protein"] += scaled["protein"]
-        totals["carbs"] += scaled["carbs"]
-        totals["fat"] += scaled["fats"]
-=======
     # Fetch today's logs + compute totals (default view)
     # -----------------------------
     user_food_logs = UserFoodLog.query.filter_by(user_id=user.id, log_date=today).all()
@@ -605,7 +577,6 @@ def dashboard():
             .limit(10)
             .all()
         )
->>>>>>> upstream/main
 
     return render_template(
         "dashboard-member.html",
@@ -613,9 +584,6 @@ def dashboard():
         user_food_logs=user_food_logs,
         totals=totals,
         search_results=search_results,
-<<<<<<< HEAD
-        UNIT_TO_GRAMS=UNIT_TO_GRAMS
-=======
         UNIT_TO_GRAMS=UNIT_TO_GRAMS,
         # calendar context (may be None when not requested)
         view=view,
@@ -645,7 +613,6 @@ def dashboard():
         today=today,
         has_unread_messages=has_unread_messages,
         has_any_messages=has_any_messages,
->>>>>>> upstream/main
     )
 
 
@@ -658,8 +625,6 @@ UNIT_TO_GRAMS = {
     "tbsp": 14.3,
     "cup": 240
 }
-<<<<<<< HEAD
-=======
 def _calculate_daily_totals(user_id: int, target_date: date) -> dict:
     logs = UserFoodLog.query.filter_by(user_id=user_id, log_date=target_date).all()
     totals = {"calories": 0.0, "protein": 0.0, "carbs": 0.0, "fat": 0.0}
@@ -720,7 +685,6 @@ def scaled_macros(food: Food, quantity_in_grams: float):
         "carbs": round(scaled["carbs"], 1),
         "fats": round(scaled["fats"], 1),
     }
->>>>>>> upstream/main
 
 def scale_nutrients(food_id, quantity, unit):
     measure = FoodMeasure.query.filter_by(food_id=food_id, measure_name=unit).first()
@@ -731,15 +695,6 @@ def scale_nutrients(food_id, quantity, unit):
         grams = quantity
 
     food = Food.query.get(food_id)
-<<<<<<< HEAD
-    factor = grams / 100  # assuming macros stored per 100g
-
-    return {
-        "calories": round(food.calories * factor, 1),
-        "protein_g": round(food.protein_g * factor, 1),
-        "carbs": round(food.carbs_g * factor, 1),
-        "fats": round(food.fats_g * factor, 1)
-=======
     scaled = scaled_macros(food, grams)  # assuming macros stored per 100g
 
     return {
@@ -747,7 +702,6 @@ def scale_nutrients(food_id, quantity, unit):
         "protein_g": round(scaled["protein"], 1),
         "carbs": round(scaled["carbs"], 1),
         "fats": round(scaled["fats"], 1)
->>>>>>> upstream/main
     }
 
 
@@ -780,90 +734,21 @@ def search_foods():
                 grams_per_unit = measure.grams
 
             quantity_in_grams = quantity * grams_per_unit
-<<<<<<< HEAD
-            serving_grams = food.serving_size or 100
-            factor = quantity_in_grams / serving_grams
-=======
             scaled = scaled_macros(food, quantity_in_grams) 
->>>>>>> upstream/main
 
             results.append({
                 "id": food.id,
                 "name": food.name,
-<<<<<<< HEAD
-                "calories": round((food.calories or 0) * factor, 1),
-                "protein_g": round((food.protein_g or 0) * factor, 1),
-                "carbs": round((food.carbs_g or 0) * factor, 1),
-                "fats": round((food.fats_g or 0) * factor, 1),
-=======
                 "calories": round(scaled["calories"], 1),
                 "protein_g": round(scaled["protein"], 1),
                 "carbs": round(scaled["carbs"], 1),
                 "fats": round(scaled["fats"], 1),
->>>>>>> upstream/main
                 "serving_size": food.serving_size,
                 "serving_unit": food.serving_unit
             })
 
     return jsonify({"results": results})
 
-<<<<<<< HEAD
-@member_bp.route("/add-food", methods=["POST"])
-def add_food():
-    user_id = session.get("user_id")
-    if not user_id:
-        flash("Please log in first.", "danger")
-        return redirect(url_for("auth.login_member"))
-
-    food_name = request.form.get("food_name", "").strip()
-    quantity = float(request.form.get("quantity") or 1)
-    unit = request.form.get("unit", "g").strip().lower()  # ← Make sure it's lowercase
-    food_id = request.form.get("food_id")
-    today = datetime.utcnow().date()
-
-    if food_id:
-        # Existing food from DB
-        food = Food.query.get(int(food_id))
-        if not food:
-            flash("Food not found.", "danger")
-            return redirect(url_for("member.dashboard"))
-    else:
-        # New food (custom)
-        calories = float(request.form.get("calories") or 0)
-        protein_g = float(request.form.get("protein_g") or 0)
-        carbs_g = float(request.form.get("carbs_g") or 0)
-        fats_g = float(request.form.get("fats_g") or 0)
-
-        food = Food(
-            name=food_name,
-            calories=calories,
-            protein_g=protein_g,
-            carbs_g=carbs_g,
-            fats_g=fats_g,
-            source_id=None,
-            serving_size=100,
-            serving_unit="g"
-        )
-        db.session.add(food)
-        db.session.commit()
-
-    # ✅ Convert to grams BEFORE saving (same as dashboard route)
-    measure = FoodMeasure.query.filter_by(food_id=food.id, measure_name=unit).first()
-    
-    if measure:
-        grams = quantity * measure.grams
-    elif unit in UNIT_TO_GRAMS:
-        grams = quantity * UNIT_TO_GRAMS[unit]
-    else:
-        grams = quantity  # assume grams by default
-
-    # Save user log (always in grams)
-    log = UserFoodLog(
-        user_id=user_id,
-        food_id=food.id,
-        quantity=grams,  # ← Store as grams
-        unit="g",        # ← Always "g"
-=======
 
 @member_bp.route("/add-meal/<int:meal_id>", methods=["POST"])
 def add_meal_to_log(meal_id: int):
@@ -1173,16 +1058,11 @@ def log_food():
         food_id=food.id,
         quantity=grams,
         unit="g",
->>>>>>> upstream/main
         log_date=today
     )
     db.session.add(log)
     db.session.commit()
 
-<<<<<<< HEAD
-    flash(f"Added {quantity} {unit} of {food.name}!", "success")
-    return redirect(url_for("member.dashboard"))
-=======
     scaled = scale_food_nutrients(food, grams)
     totals = _calculate_daily_totals(user_id, today)
     totals["fats"] = totals["fat"]
@@ -1206,7 +1086,6 @@ def log_food():
         "totals": totals,
         "created_food": created_food
     })
->>>>>>> upstream/main
 
 # -----------------------------
 # View Progress
@@ -1222,8 +1101,6 @@ def view_progress():
     return render_template('display-member.html', progress_entries=progress_entries)
 
 # -----------------------------
-<<<<<<< HEAD
-=======
 # Update Profile Information
 # -----------------------------
 @member_bp.route('/update-info', methods=['POST'])
@@ -1371,7 +1248,6 @@ def log_weight():
 
 
 # -----------------------------
->>>>>>> upstream/main
 # Register Member with Trainer
 # -----------------------------
 @member_bp.route('/register-trainer', methods=['POST'])
@@ -1401,24 +1277,12 @@ def exercise_plan():
     if not user_id:
         return redirect(url_for("auth.login_member"))
 
-<<<<<<< HEAD
-    user = User.query.get(user_id)
-    # Dummy plan for now — replace with real query if needed
-    plan = []
-    return render_template("exercise-plan.html", user=user, plan=plan)
-=======
     return redirect(url_for('template.list_templates'))
->>>>>>> upstream/main
 
 
 @member_bp.route("/get-measures/<int:food_id>")
 def get_measures(food_id):
     measures = FoodMeasure.query.filter_by(food_id=food_id).all()
-<<<<<<< HEAD
-    return jsonify({
-        "measures": [{"measure_name": m.measure_name, "grams": m.grams} for m in measures]
-    })
-=======
     payload = []
     seen = set()
 
@@ -1438,7 +1302,6 @@ def get_measures(food_id):
         payload.append({"measure_name": "oz", "grams": UNIT_TO_GRAMS.get("oz", 28.35)})
 
     return jsonify({"measures": payload})
->>>>>>> upstream/main
 
 # -----------------------------
 # Delete Food Log
@@ -1447,30 +1310,6 @@ def get_measures(food_id):
 def delete_food_log(log_id):
     user_id = session.get('user_id')
     if not user_id:
-<<<<<<< HEAD
-        flash("Please log in first.", "danger")
-        return redirect(url_for("auth.login_member"))
-    
-    # Find the log entry
-    log = UserFoodLog.query.get(log_id)
-    
-    if not log:
-        flash("Food log not found.", "danger")
-        return redirect(url_for("member.dashboard"))
-    
-    # Make sure this log belongs to the current user
-    if log.user_id != user_id:
-        flash("You don't have permission to delete this log.", "danger")
-        return redirect(url_for("member.dashboard"))
-    
-    # Delete the log
-    food_name = log.food.name
-    db.session.delete(log)
-    db.session.commit()
-    
-    flash(f"Removed {food_name} from your log.", "success")
-    return redirect(url_for("member.dashboard"))
-=======
         return jsonify({"status": "error", "message": "Please log in first."}), 403
 
     log = UserFoodLog.query.get(log_id)
@@ -1863,4 +1702,3 @@ def view_messages():
         messages=messages,
         user=current_user,
     )
->>>>>>> upstream/main

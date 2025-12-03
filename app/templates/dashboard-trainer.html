@@ -9,37 +9,6 @@
   <style>
   </style>
 </head>
-<<<<<<< HEAD
-<body class="bg-light">
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-      <a class="navbar-brand ms-auto fw-bold" href="{{ url_for('main.home')}}">Flex Fitness</a>
-    </div>
-  </nav>
-
-  <div class="container text-center d-flex flex-column justify-content-center" style="min-height: 90vh;">
-    <h1 class="display-4 fw-bold mb-3">Trainer Dashboard</h1>
-    <p class="lead mb-4">Welcome back, {{ user.first_name }}!</p>
-
-    <p class="text-center trainer-code mb-4">
-      Your Trainer Code: <strong>{{ user.trainer_code }}</strong>
-    </p>
-
-    <!-- Trainer Actions -->
-    <div class="d-grid gap-3 col-6 mx-auto">
-      <a href="{{ url_for('trainer.view_clients') }}" class="btn btn-primary">View Clients</a>
-      
-      <!-- 🏋️ Add Create Template Button -->
-      <a href="{{ url_for('template.create_template') }}" class="btn btn-success">
-        Create Workout Template
-      </a>
-
-      <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger">Log Out</a>
-    </div>
-  </div>
-
-=======
 <body class="app-shell" data-theme="{{ theme_mode or 'light' }}">
   <header class="app-top-bar">
     <div class="container d-flex align-items-center justify-content-between">
@@ -125,7 +94,6 @@
   </nav>
 
   <script src="{{ url_for('static', filename='js/theme-toggle.js') }}"></script>
->>>>>>> upstream/main
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
