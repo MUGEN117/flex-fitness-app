@@ -26,6 +26,46 @@
         {% for ex in exercises %}
           <li class="list-group-item">
             <strong>{{ ex.name }}</strong> — {{ ex.muscle }} ({{ ex.equipment }})
+            <!-- ADD BUTTON HERE -->
+             <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal"
+              data-bs-target="#exerciseModal{{ loop.index }}">
+              View Info
+             </button>
+             <div class="modal fade" id="exerciseModal{{ loop.index }}" tabindex="-1">
+               <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                 <div class="modal-content">
+                   <div class="modal-header">
+                    <h5 class="modal-title">{{ ex.name }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+
+                <div class="modal-body">
+                <!-- If this exercise comes from your ExerciseCatalog later: -->
+                {% set cat = catalog_map.get(ex.name) %}
+
+        {% if cat %}
+          {% if cat.local_image_main %}
+            <img src="{{ url_for('static', filename=cat.local_image_main) }}" 
+                 class="img-fluid rounded mb-3">
+          {% endif %}
+
+          {% if cat.instructions %}
+            <pre class="text-wrap">{{ cat.instructions }}</pre>
+          {% else %}
+            <p class="text-muted">No instructions available.</p>
+          {% endif %}
+        {% else %}
+          <p class="text-muted">No saved instructions for this exercise.</p>
+        {% endif %}
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
             <form method="POST" class="mt-2" action="{{ url_for('template.add_exercise', template_id=template.id) }}">
               <input type="hidden" name="exercise_name" value="{{ ex.name }}">
               <div class="row g-2">

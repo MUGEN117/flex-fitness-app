@@ -12,7 +12,7 @@ from app.models import (
 )
 from datetime import datetime
 import json
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 
 
 template_bp = Blueprint('template', __name__, url_prefix='/templates')
@@ -138,7 +138,15 @@ def view_template(template_id):
             flash('Template updated.', 'success')
             return redirect(url_for('template.list_templates'))
 
-    return render_template('template-detail.html', template=tpl)
+    # ✅ Build catalog_map here in Python
+    catalog_rows = ExerciseCatalog.query.all()
+    catalog_map = {row.name: row for row in catalog_rows}
+
+    return render_template(
+        'template-detail.html',
+        template=tpl,
+        catalog_map=catalog_map
+    )
 
 
 @template_bp.route('/<int:template_id>/add-exercise', methods=['POST'])
@@ -203,6 +211,25 @@ def add_exercise(template_id):
     flash('Exercise added to template.', 'success')
     return redirect(url_for('template.view_template', template_id=template_id))
 
+@template_bp.route('/<int:template_id>/add-exercise', methods=['GET'])
+@login_required
+def add_exercise_page(template_id):
+    tpl = ExerciseTemplate.query.get_or_404(template_id)
+
+    if tpl.owner_id != current_user.id:
+        flash("You do not have access to this template.", "danger")
+        return redirect(url_for("template.list_templates"))
+
+    # Build catalog map: { exercise_name : ExerciseCatalog row }
+    catalog_rows = ExerciseCatalog.query.all()
+    catalog_map = { row.name: row for row in catalog_rows }
+
+    return render_template(
+        "add_exercise.html",
+        template=tpl,
+        exercises=None,      # no search yet
+        catalog_map=catalog_map
+    )
 
 @template_bp.route('/<int:template_id>/delete', methods=['POST'])
 @login_required

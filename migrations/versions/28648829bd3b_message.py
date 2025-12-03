@@ -49,7 +49,7 @@ def upgrade():
                existing_type=sa.DATETIME(),
                nullable=True,
                existing_server_default=sa.text('(CURRENT_TIMESTAMP)'))
-        batch_op.drop_index(batch_op.f('ix_member_meal_user_slot'))
+       
         _replace_fk(batch_op, 'member_meal', ['user_id'], 'user')
 
     with op.batch_alter_table('member_meal_ingredient', schema=None) as batch_op:
@@ -61,7 +61,7 @@ def upgrade():
                existing_type=sa.DATETIME(),
                nullable=True,
                existing_server_default=sa.text('(CURRENT_TIMESTAMP)'))
-        batch_op.drop_index(batch_op.f('ix_member_meal_ingredient_meal_id'))
+        
         _replace_fk(batch_op, 'member_meal_ingredient', ['food_id'], 'food')
         _replace_fk(batch_op, 'member_meal_ingredient', ['meal_id'], 'member_meal')
 
@@ -74,7 +74,7 @@ def upgrade():
                existing_type=sa.DATETIME(),
                nullable=True,
                existing_server_default=sa.text('(CURRENT_TIMESTAMP)'))
-        batch_op.drop_index(batch_op.f('ix_trainer_meal_member_slot'))
+        
         _replace_fk(batch_op, 'trainer_meal', ['member_id'], 'user')
         _replace_fk(batch_op, 'trainer_meal', ['trainer_id'], 'user')
 
@@ -86,11 +86,12 @@ def upgrade():
                existing_type=sa.DATETIME(),
                nullable=True,
                existing_server_default=sa.text('(CURRENT_TIMESTAMP)'))
-        batch_op.drop_index(batch_op.f('ix_trainer_meal_ingredient_meal_id'))
+        
         _replace_fk(batch_op, 'trainer_meal_ingredient', ['meal_id'], 'trainer_meal')
         _replace_fk(batch_op, 'trainer_meal_ingredient', ['food_id'], 'food')
 
     # ### end Alembic commands ###
+
 
 
 def downgrade():

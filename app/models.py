@@ -6,7 +6,6 @@ import pytz
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
 
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
@@ -283,6 +282,7 @@ class TemplateExercise(db.Model):
     equipment = db.Column(db.String(100))
     default_sets = db.Column(db.Integer)
     default_reps = db.Column(db.Integer)
+    
 
 
 class ExerciseCatalog(db.Model):
